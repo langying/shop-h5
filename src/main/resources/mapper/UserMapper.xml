@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mobei.app.dao.UserMapper">
+	
+
+	
+	<insert id="save" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_user (
+			ip_addr,
+			`nick_name`, 
+			`account`,
+			password,
+			code,
+			token,
+		   `gmt_create`
+
+
+		)
+		VALUES (
+			#{ip},
+			#{nickName}, 
+			#{account},
+			#{passWord},
+			#{inviteCode},
+			#{token},
+			now()
+		)
+	</insert>
+
+	<insert id="saveLogin">
+        INSERT INTO t_user_log (
+			`user_id`,
+		    `gmt_create`
+		)
+		VALUES (
+			#{userId},
+			now()
+		)
+
+
+	</insert>
+
+	<select id="findByAccount" resultType="com.mobei.app.entity.UserEntity">
+		SELECT
+		    id as userId,
+			account,
+			token
+		FROM
+			t_user
+		WHERE
+			account = #{account} and status=0 and del_flag=0
+	</select>
+
+	<select id="findByToken" resultType="com.mobei.app.entity.UserEntity">
+		SELECT
+		id as userId,
+		account,
+		token
+		FROM
+		t_user
+		WHERE
+		token = #{token} and status=0 and del_flag=0
+	</select>
+
+
+
+
+	<select id="login" resultType="com.mobei.app.entity.UserEntity">
+		SELECT
+		id as userId,
+		`account`,
+		token
+		FROM
+		t_user
+		WHERE
+		account = #{account} and password=#{passWord} and status=0 and del_flag=0
+	</select>
+
+	<update id="update">
+		update t_user SET
+               password=#{passWord}
+               where account=#{account}
+
+	</update>
+
+
+	
+
+
+
+</mapper>

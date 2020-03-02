@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mobei.app.dao.PromoteMapper">
+
+	<select id="list" resultType="com.mobei.app.entity.PromoteEntity">
+SELECT
+    a.id,
+    a.name,
+    a.type,
+    a.describe,
+    a.img_url    AS imgUrl,
+    a.link_url   AS itemUrl,
+    b.link_url   AS linkUrl,
+    a.column_id  AS columnId,
+    a.product_id AS productId
+FROM
+    t_promote a
+    LEFT JOIN t_product b
+        ON a.product_id = b.id
+WHERE
+    a.del_flag=0
+ORDER BY a.order_num
+LIMIT 4
+	</select>
+
+</mapper>

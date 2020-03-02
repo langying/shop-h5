@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mobei.app.dao.MessageMapper">
+
+
+	<sql id="columns">
+		a.id AS "id",
+		a.title,
+		a.type,
+		a.product_id as productId,
+		a.content as content,
+		a.link_url as linkUrl,
+		a.gmt_create AS "createTime"
+
+	</sql>
+
+
+	<select id="list" resultType="com.mobei.app.entity.MessageEntity">
+		SELECT
+		<include refid="columns"/>
+		FROM
+			t_message a
+		WHERE
+			 a.del_flag=0 order by a.gmt_create desc
+	</select>
+
+	<select id="findList" resultType="com.mobei.app.entity.MessageEntity">
+		SELECT
+		<include refid="columns"/>,if(b.id,1,0) as lookFlag
+		FROM
+		t_message a left join t_message_look b on a.id=b.message_id and b.user_id=#{userId}
+		WHERE
+		a.del_flag=0 order by a.gmt_create desc
+
+	</select>
+
+
+	<insert id="saveLook">
+		insert into
+		t_message_look
+		(
+		user_id,
+		message_id,
+		`gmt_create`
+		)
+		VALUES (
+		#{userId},
+		#{messageId},
+		now()
+		)
+
+
+	</insert>
+
+	<select id="isLook" resultType="com.mobei.app.entity.MessageEntity">
+		select message_id as messageId FROM
+		t_message_look
+		where user_id=#{userId} and message_id=#{messageId}
+
+	</select>
+
+
+
+
+	
+
+
+
+</mapper>

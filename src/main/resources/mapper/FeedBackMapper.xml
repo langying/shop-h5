@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mobei.app.dao.FeedBackMapper">
+
+
+	<insert id="save">
+		insert into
+		t_feedback
+		(
+		user_id,
+		tags,
+		content,
+		`gmt_create`
+		)
+		VALUES (
+		#{userId},
+		#{tags},
+		#{content},
+		now()
+		)
+
+
+	</insert>
+
+
+
+
+
+
+	
+
+
+
+</mapper>

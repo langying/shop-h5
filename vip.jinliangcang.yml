@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://127.0.0.1:3306/jinliangcang?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: HHXdl9wUAlektjyQPhzbV7FruytwROQ
+    driverClassName: com.mariadb.jdbc.Driver
+  redis:
+    host: 127.0.0.1
+    database: 0
+    password: 

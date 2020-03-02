@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mobei.app.dao.ProductMapper">
+
+
+	<sql id="columns">
+		a.id AS "productId",
+		a.name,
+		a.logo_url as imgUrl,
+		a.loan_amount_min as loanAmountMin,
+		a.loan_amount_max as loanAmountMax,
+		CONCAT(a.labelg,',',a.labelk,',',a.labelx) as labels,
+		a.apply_total as applyTotal,
+		a.rate_scope as rateScope,
+		a.rate_unit as rateUnit,
+		a.borrow_min as borrowMin,
+		a.borrow_max as borrowMax,
+		a.borrow_unit as borrowUnit,
+		a.score,
+		a.link_url as linkUrl,
+		a.apply_data as applyData,
+		a.features_data as featuresData,
+		a.introduce,
+		a.describe
+
+	</sql>
+
+	<select id="list" resultType="com.mobei.app.entity.ProductEntity">
+		SELECT
+		<include refid="columns"/>
+		FROM
+		t_product a
+		<where>
+			a.del_flag=0 and a.status=0
+
+			<if test="recommendFlag==1">
+				and a.recommend_flag=#{recommendFlag}
+			</if>
+			<if test="hotFlag>0">
+				and a.hot_flag=#{hotFlag}
+			</if>
+			<if test="loanType==1">
+				and a.loan_amount_min &lt;= 2000
+			</if>
+			<if test="loanType==2">
+				and ((a.loan_amount_max>=2000 and a.loan_amount_max &lt;= 5000) or (a.loan_amount_min>=2000 and a.loan_amount_min &lt;= 5000))
+			</if>
+			<if test="loanType==3">
+				and ((a.loan_amount_max>=5000 and a.loan_amount_max &lt;= 10000) or (a.loan_amount_min>=5000 and a.loan_amount_min &lt;= 10000))
+			</if>
+			<if test="loanType==4">
+				and ((a.loan_amount_max>=10000 and a.loan_amount_max &lt;= 30000) or (a.loan_amount_min>=10000 and a.loan_amount_min &lt;= 30000))
+			</if>
+			<if test="loanType==5">
+				and (a.loan_amount_max>=30000)
+			</if>
+
+		</where>
+
+
+		<if test="recommendFlag==0">
+			order by a.sort_num,a.id
+		</if>
+		<if test="recommendFlag==1">
+			order by a.order_num,a.id
+		</if>
+		<if test="recommendFlag==2">
+			order by a.lend_num,a.id
+		</if>
+
+
+	</select>
+
+
+	<select id="getColumnList" resultType="com.mobei.app.entity.ProductEntity">
+		SELECT
+		<include refid="columns"/>
+		FROM
+		t_product a
+		<where>
+			a.del_flag=0 and a.status=0
+
+            and locate(#{columnId},a.columns)
+			<if test="loanType==1">
+				and (a.loan_amount_min>=0 and a.loan_amount_max &lt;= 2000)
+			</if>
+			<if test="loanType==2">
+				and (a.loan_amount_min>=2000 and a.loan_amount_max &lt;= 5000)
+			</if>
+			<if test="loanType==3">
+				and (a.loan_amount_min>=5000 and a.loan_amount_max &lt;= 10000)
+			</if>
+			<if test="loanType==4">
+				and (a.loan_amount_min>=10000 and a.loan_amount_max &lt;= 30000)
+			</if>
+			<if test="loanType==5">
+				and (a.loan_amount_min>=30000)
+			</if>
+
+		</where>
+		order by a.order_num
+	</select>
+
+	<select id="findByUserId" resultType="com.mobei.app.entity.ProductEntity">
+SELECT
+    a.product_id  AS productId,
+    b.name,
+    b.describe,
+    b.introduce,
+    b.logo_url    AS imgUrl,
+    b.link_url    AS linkUrl,
+    b.apply_total AS applyTotal,
+    a.gmt_create  AS applyTime
+FROM
+    t_product_apply a
+    LEFT JOIN t_product b
+        ON a.product_id=b.id
+WHERE
+    a.user_id=#{userId} AND a.type=1
+ORDER BY a.gmt_create DESC
+	</select>
+
+	<select id="findById" resultType="com.mobei.app.entity.ProductEntity">
+		SELECT
+		<include refid="columns"/>
+		FROM
+		t_product a
+		WHERE
+		a.del_flag=0 and a.status=0 and a.id=#{productId}
+	</select>
+
+
+	<insert id="saveApply">
+		insert into
+		t_apply_record
+		 (
+			user_id,
+			product_id,
+		   `gmt_create`
+		)
+		VALUES (
+			#{userId},
+			#{productId},
+			now()
+		)
+
+
+	</insert>
+
+	<insert id="saveRecord">
+		insert into
+		t_product_apply
+		(`user_id`,`product_id`,`type`,`content`,`gmt_create`)
+		VALUES
+		(#{userId},#{productId},#{type},#{content},now())
+
+
+	</insert>
+
+	<update id="updateTotal">
+		update t_product
+		set apply_total=apply_total+1
+		where id=#{productId}
+	</update>
+
+
+
+
+
+	
+
+
+
+</mapper>
